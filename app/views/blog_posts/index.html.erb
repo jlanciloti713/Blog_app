@@ -1,0 +1,22 @@
+<h1>My Blog Posts</h1>
+
+<%= form_tag("/blog_posts", method: :get) do %>
+<input type="text" name="tag" value="<% @tag_name %>">
+<input type="submit" value="Search for topic">
+<% end %>
+
+<% if @tag_name %>
+    <p>Displaying <%= @blog_posts.length %> result(s)</p>
+<% end %>
+
+<% @blog_posts.each do |blog_post| %>
+  
+    <%= link_to("/blog_posts/#{blog_post.id}") do %>
+        <div class="blog-posts">
+            <h2><%= blog_post.title %></h2>
+            <p><%= blog_post.content %></p>
+            <p>Comments go here</p>
+        </div>
+    <% end %>
+
+<% end %>
