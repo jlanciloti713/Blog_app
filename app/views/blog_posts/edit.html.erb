@@ -1,4 +1,16 @@
 <h1>Edit page!</h1>
+
+<% if @blog_post.errors.any? %>
+    <div id="error-explanation">
+      <h2><%= pluralize(@blog_post.errors.count, "error") %> prevented this Blog Post from being saved:</h2>
+      <ul> 
+        <% @blog_post.errors.full_messages.each do |message|%>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+<% end %>
+
 <%= form_tag("/blog_posts/#{@blog_post.id}", method: :put) do %>
 
 <label for="tag_id">Change Topic</label>
@@ -12,7 +24,7 @@
 <br>
 
 <label for="content">Enter Content:</label>
-<textarea type="text" id = "content" name="content" placeholder="Start Typing" cols = "30" rows = "20" style="resize: none"><%= @blog_post.content %></textarea>
+<textarea type="text" id ="content" name="content" placeholder="Start Typing" cols = "30" rows = "20" style="resize: none"><%= @blog_post.content %></textarea>
 <br>
 <input type="submit" value="Submit Changes">
 <% end %>

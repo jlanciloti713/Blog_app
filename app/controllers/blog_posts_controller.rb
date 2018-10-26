@@ -1,4 +1,6 @@
 class BlogPostsController < ApplicationController
+    before_action :authenticate_user!, except: [:index, :show]
+
     def index
 
         if params[:tag]
@@ -29,22 +31,26 @@ class BlogPostsController < ApplicationController
     def show
         id = params[:id]
         @blog_post = BlogPost.find(id)
+        @new_comment = Comment.new
     end
 
     def new
+        @blog_post = BlogPost.new
         @tags= Tag.all
     end
 
     def create
 
-        @blog_post = BlogPost.create(title: params[:title], content: params[:content])
-        params[:tag_ids].each do |tag_id|
-            BlogPostTag.create(
-                                blog_post_id: @blog_post.id, 
-                                tag_id: tag_id
-                                )
-        end 
-        redirect_to ("/blog_posts")
+        @blog_post = BlogPost.new(title: params[:title], content: params[:content])
+
+        if @blog_post.save
+            @blog_post.create_tag(params[:tag_ids]) if params[:tag_ids]
+            redirect_to ("/blog_posts")
+        else
+            @tags= Tag.all
+            render 'new'
+        end
+
     end
 
     def edit
@@ -57,23 +63,27 @@ class BlogPostsController < ApplicationController
     def update
 
         @blog_post = BlogPost.find(params[:id])
-        @blog_post.update(
+        
 
-                title: params[:title],
-                content: params[:content]
-            )
-        submitted_tag_ids = params[:tag_ids].map { |tag_id| tag_id.to_i }
-        old_tag_ids = @blog_post.tag_ids - submitted_tag_ids
-        new_tag_ids = submitted_tag_ids - @blog_post.tag_ids
+        if @blog_post.update(title: params[:title], content: params[:content])
+            @blog_post.update_tags(params[:tag_ids])if params[:tag_ids]
+                # submitted_tag_ids = params[:tag_ids].map { |tag_id| tag_id.to_i }
+                # old_tag_ids = @blog_post.tag_ids - submitted_tag_ids
+                # new_tag_ids = submitted_tag_ids - @blog_post.tag_ids
 
-        old_tag_ids.each do |tag_id|
-            BlogPostTag.find_by(blog_post_id: @blog_post.id, tag_id: tag_id).destroy
+                # old_tag_ids.each do |tag_id|
+                #     BlogPostTag.find_by(blog_post_id: @blog_post.id, tag_id: tag_id).destroy
+                # end
+                # new_tag_ids.each do |tag_id|
+                #     BlogPostTag.find_by(blog_post_id: @blog_post.id, tag_id: tag_id)
+                # end
+            # end 
+
+            redirect_to ("/blog_posts/#{@blog_post.id}")
+        else 
+            @tags = Tag.all
+            render 'edit'
         end
-        new_tag_ids.each do |tag_id|
-            BlogPostTag.find_by(blog_post_id: @blog_post.id, tag_id: tag_id)
-        end
-
-        redirect_to ("/blog_posts/#{@blog_post.id}")
 
     end
       

@@ -1,9 +1,20 @@
 <h1>this is the new new</h1>
 
+<% if @blog_post.errors.any? %>
+    <div id="error-explanation">
+      <h2><%= pluralize(@blog_post.errors.count, "error") %> prevented this Blog Post from being saved:</h2>
+      <ul> 
+        <% @blog_post.errors.full_messages.each do |message|%>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+<% end %>
+
 <%= form_tag("/blog_posts", method: :post) do %>
 
 <label for="title">Enter Title:</label>
-<input type="text" id = "title" name="title" placeholder="New Title">
+<input type="text" id = "title" name="title" value="<%= @blog_post.title %>" placeholder="New Title">
 <br>
 
 <%= label_tag(:tag_ids, "Select tag(s) for your post!") %>
@@ -12,7 +23,7 @@
 
 <br>
 <label for="content">Enter Content:</label>
-<textarea type="text" id = "content" name="content" placeholder="Start Typing" cols = "30" rows = "20" style="resize: none"></textarea>
+<textarea type="text" id = "content" name="content" placeholder="Start Typing" cols = "30" rows = "20" style="resize: none"><%= @blog_post.content %></textarea>
 <br>
 <input type="submit" value="Create new blog post!">
 <% end %>
