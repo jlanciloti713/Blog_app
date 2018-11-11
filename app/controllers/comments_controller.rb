@@ -7,17 +7,22 @@ class CommentsController < ApplicationController
     def create
         @new_comment = Comment.new(
 
-                                    username: params[:username],
                                     content: params[:content],
-                                    blog_post_id: params[:blog_post_id]
+                                    blog_post_id: params[:blog_post_id],
+                                    user_id: current_user.id
                                 )
 
-        if @new_comment.save
-            redirect_to "/blog_posts/#{@new_comment.blog_post.id}"
-        # redirect_to "/blog_post/#{comment.blog_post_id}" also works
-        else
-            @blog_post = BlogPost.find(params[:blog_post_id])
-            render '/blog_posts/show'
+        respond_to do |format|
+            if @new_comment.save
+                format.html {redirect_to "/blog_posts/#{@new_comment.blog_post_id}"}
+                format.json {render json: @new_comment, include: :user, status: 200}
+            else
+                format.html do
+                @blog_post = BlogPost.find(params[:blog_post_id])
+                render '/blog_posts/show'
+                end
+                format.json {render json: {errors: @new_comment.errors.full_messages}, status: 400}
+            end
         end
     end
 

@@ -41,10 +41,11 @@ class BlogPostsController < ApplicationController
 
     def create
 
-        @blog_post = BlogPost.new(title: params[:title], content: params[:content])
+        @blog_post = BlogPost.new(title: params[:title], content: params[:content], user_id: current_user.id)
 
         if @blog_post.save
-            @blog_post.create_tag(params[:tag_ids]) if params[:tag_ids]
+            @blog_post.create_tags(params[:tag_ids]) if params[:tag_ids]
+            flash[:success] = "Good Job! You made a blog post"
             redirect_to ("/blog_posts")
         else
             @tags= Tag.all
