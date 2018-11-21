@@ -15,6 +15,11 @@ class BlogPostsController < ApplicationController
         else
           @blog_posts = BlogPost.all
         end
+
+        respond_to do |format|
+            format.html {render 'index'}
+            format.json {render json: @blog_posts, status: 200}
+        end
     
     end
 
